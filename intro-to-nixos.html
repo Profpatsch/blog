@@ -1,0 +1,179 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="reveal.js/css/reveal.css">
+        <link rel="stylesheet" href="reveal.js/css/theme/beige.css">
+        <meta charset="utf-8">
+        <style>
+         body {
+             background-image: url(./img/nixos.png);
+             background-size: 10%;
+             background-position: 5% 90%;
+             background-repeat: no-repeat;
+             background-attachment: fixed;
+         }
+         .reveal section img {
+             border: none;
+             box-shadow: none;
+             height: 600px;
+         }
+         .reveal h1 .nixd,
+         .reveal h2 .nixd {
+             background-image: url(./img/nixos.png);
+             background-size: 1.6em;
+             background-position: center;
+             background-repeat: no-repeat;
+             padding: 0.3em 0.3em;
+         }
+
+
+        </style>
+    </head>
+    <body>
+      <div class="reveal">
+        <div class="slides">
+          <section>
+            <h1>Intro to <span class="nixd">Nix</span>(OS)</h1>
+          </section>
+
+
+          <section>
+
+            <h2>Why <span class="nixd">Nix</span>?</h2>
+
+            <section>
+              <h2>Package Managers</h2>
+              <ul>
+                <li>Installer?</li>
+                <li>What’s in a Package? 📦</li>
+                <li>(Un-)Installation</li>
+                <li>Package Management, Collisions?</li>
+              </ul>
+            </section>
+
+            <section>
+              <table>
+                <thead>
+                  <th>Package 1</th>
+                  <th>Package 2</th>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>/usr/share/foobar<br>/bin/foobar<br>/etc/config</td>
+                    <td>/usr/share/baz   <br>/bin/baz   <br>/etc/config ⚡</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p>What should happen now?</p>
+              <p>Also: 2 Versions of a package?</p>
+            </section>
+
+            <section>
+              <p>Paket is installing, PC crashes?</p>
+              <p class="fragment">→ Atomic Operations</p>
+            </section>
+
+            <section>
+              <p>Something doesn’t work after update?</p>
+              <p class="fragment">→ Rollbacks</p>
+            </section>
+
+            <section>
+              <img src="img/package-manager-old.svg" size="300px" />
+            </section>
+            <section>
+              <img src="img/package-manager-nix.svg" />
+            </section>
+
+          </section>
+
+          <section>
+            <section>
+              <img src="img/nix-stack.png" height="600px" />
+            </section>
+          </section>
+
+          <section>
+
+            <section>
+              <h1>Level 1: <span class="nixd">Nix</span></h1>
+              <ul>
+                <li>PhD of Eelco Dolstra</li>
+                <li>Written in C++ & Perl</li>
+                <li>Can be used alongside apt, pacman, rpm, …</li>
+                <li><a href="https://nixos.org/nix">https://nixos.org/nix</a></li>
+              </ul>
+              <p class="fragment"><strong>ACTION!</strong> Install nix!</p>
+            </section>
+
+
+            <section>
+              <h3>Checkpoint 1.1: <code>derivation</code>s</h3>
+              <figure>
+                <img src="img/nix-derivations.svg" />
+                <figcaption class="fragment">check for changes over <strong>build inputs</strong></figcaption>
+              </figure>
+            </section>
+            <section>
+              <img src="img/nix-derivations-2.svg" />
+            </section>
+
+            <section>
+              <h3>What’s a <code>derivation</code>?</h3>
+              <ul>
+                <li><span class="fragment highlight-red" data-fragment-index="2">complete</span> <span class="fragment highlight-blue" data-fragment-index="1">build description</span></li>
+                <li class="fragment" data-fragment-index="1">Nix knows how to <em>realize</em> a <code>derivation</code></li>
+                <li class="fragment" data-fragment-index="2"><em>Every</em> input is referenced from the store</li>
+              </ul>
+              <p class="fragment">Let’s see what they look like</p>
+            </section>
+          </section>
+
+          <section>
+            <section>
+              <h3>Realization</h3>
+              <ul>
+                <li>build daemon at work</li>
+                <li>chroot & no network access</li>
+                <li>creates <code>outputs</code> from <code>derivations</code></li>
+              </ul>
+            </section>
+
+            <section>
+              <h3>Checkpoint 1.2: Nix expressions</h3>
+              <p>How can we generate derivations?</p>
+              <pre><code data-trim data-noescape>
+              derivation {
+                system = "x86_64-linux";
+                name = "hello-world-0.1";
+                builder = ./builder.sh;
+              }
+              </code></pre>
+              <p>See <a href="https://nixos.org/nix/manual/#ssec-derivation">manual</a></p>
+            </section>
+
+            <section>
+              <h2>Action!</h2>
+              <ol>
+                <li>Write a derivation <code>hello-0.1</code> that puts <code>Hello world</code> on stdout and fails</li>
+                <li>Now create a store path that is a file with <code>hello world</code> in it. (special variable is <code>$out</code>)</li>
+              </ol>
+              <p>Any problems encountered?</p>
+            </section>
+          </section>
+
+
+          <section>
+            <section>
+              <h1>Level 2: <code>stdenv</code></h1>
+              
+              <p>We want to have a building environment</p>
+
+
+        </div>
+      </div>
+      <script src="reveal.js/js/reveal.js"></script>
+      <script>
+        Reveal.initialize();
+      </script>
+    </body>
+</html>
