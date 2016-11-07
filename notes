@@ -1,0 +1,17 @@
+Vorraussetzungen:
+• Einfache Shell-Scripts lesen können
+• Laptop mit installiertem Virtualbox & Kernelmodul
+• Linux Distribution oder Windows mit Linux in Virtualbox
+
+
+graphik nixos<->nixpkgs vertauschen
+derivation explanation 
+yellow: mark inputs that changed (in dem Haus-Diagramm)
+Haus-Diagramm auf Englisch übersetzen
+Aufgaben klarer formulieren
+  – Bei basic-hello-world Derivation klar die Struktur vorgeben („Wir bauen jetzt die simpelste Derivation, die es gibt, in zwei Schritten“)
+
+
+feedback:
+Service-Beispiele und Konfigurationserstellung für deklarative Systeme hinterließ Eindruck
+VMware is a bitch. Ein fertiges Image vorbereiten (wenn nicht Installation explizit erwünscht) und im Vorraus ankündigen, dass es auf den Laptops gehen muss
