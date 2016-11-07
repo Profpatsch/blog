@@ -2,12 +2,12 @@
     <head>
         <link rel="stylesheet" href="reveal.js/css/reveal.css">
         <link rel="stylesheet" href="reveal.js/css/theme/beige.css">
+        <meta charset="utf-8">
         <style>
          body {
              background-image: url(./img/nixos.png);
-             background-image: hello;
              background-size: 10%;
-             background-position: 95% 90%;
+             background-position: 5% 90%;
              background-repeat: no-repeat;
              background-attachment: fixed;
          }
@@ -15,20 +15,80 @@
              border: none;
              box-shadow: none;
          }
+         .reveal h1 .nixd {
+             background-image: url(./img/nixos.png);
+             background-size: 1.6em;
+             background-position: center;
+             background-repeat: no-repeat;
+             padding: 0.3em 0.3em;
+         }
+
+
         </style>
     </head>
     <body>
-        <div class="reveal">
-            <div class="slides">
-              <section>
-                <h1>Fuctional Aspects of Nix</h1>
-               </section>
-                <section><img src="img/nix-stack.png" height="600" /></section>
-            </div>
+      <div class="reveal">
+        <div class="slides">
+          <section>
+            <h1>Funktionale Aspekte von <span class="nixd">Nix</span></h1>
+          </section>
+
+
+          <section>
+            <section>
+              <h2>Paketmanager</h2>
+              <ul>
+                <li>Installer?</li>
+                <li>What’s in a Package? 📦</li>
+                <li>(De-)Installation</li>
+                <li>Verwaltung, Kollisionen?</li>
+              </ul>
+            </section>
+
+            <section>
+              <table>
+                <thead>
+                  <th>Paket 1</th>
+                  <th>Paket 2</th>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>/usr/share/foobar<br>/bin/foobar<br>/etc/config</td>
+                    <td>/usr/share/baz   <br>/bin/baz   <br>/etc/config ⚡</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p>Was soll jetzt passieren?</p>
+              <p>Auch: 2 Versionen von einem Paket?</p>
+            </section>
+
+            <section>
+              <p>Paket wird installiert, PC stürzt ab?</p>
+              <p class="fragment">→ Atomare Operationen</p>
+            </section>
+
+            <section>
+              <p>Nach Update geht etwas nicht mehr?</p>
+              <p class="fragment">→ Rollbacks</p>
+            </section>
+          </section>
+
+
+          <section>
+            <figure>
+              <img src="img/packaging-stateful.png" />
+              <figcaption>@fpletz</figcaption>
+          </section>
+
+
+          <section>
+            <img src="img/nix-stack.png" height="600" />
+          </section>
         </div>
-        <script src="reveal.js/js/reveal.js"></script>
-        <script>
-            Reveal.initialize();
-        </script>
+      </div>
+      <script src="reveal.js/js/reveal.js"></script>
+      <script>
+        Reveal.initialize();
+      </script>
     </body>
 </html>
