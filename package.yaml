@@ -1,0 +1,36 @@
+name: profpatsch-de
+version: 0.1.0
+#github: Profpatsch/profpatsch.de
+license: GPL-3
+#license-file: LICENSE
+synopsis: My blog.
+#description: 
+author: Profpatsch
+maintainer: mail@profpatsch.de
+category: Data
+
+ghc-options:
+  - -Wall
+
+dependencies:
+  - aeson
+  - base == 4.*
+  - containers
+  - either >= 4.4
+  - data-default
+  - doctemplates
+  - filepath
+  - pandoc == 1.19.*
+  - pandoc-types
+  - protolude >= 0.1
+  - shake == 0.15.*
+  - text
+
+library:
+  source-dirs: src
+
+executables:
+  site-compiler:
+    main: SiteCompiler.hs
+    dependencies:
+      - profpatsch-de

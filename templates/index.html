@@ -1,0 +1,11 @@
+<html>
+  <h1>dis is an index</h1>
+
+  <ol>
+    $for(post)$<li>
+      <p>$post.title$;</p>
+      $if(post.tags)$<p>Tags: $post.tags$</p>$endif$
+    </li>
+    $endfor$
+  </ol>
+</html>
