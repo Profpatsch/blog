@@ -3,7 +3,7 @@ title: NixOS at the Linux Infotag
 subtitle: A Short Retrospective
 tags: [nixos]
 date: 2017-04-28
-...
+---
 
 Last week [Linux Infotag Augsburg](https://www.luga.de/Aktionen/LIT-2017/)
 (“Linux Info Day”) happened at Hochschule Augsburg, co-organized

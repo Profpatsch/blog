@@ -4,7 +4,7 @@ subtitle: It’s not pretty, but the results are
 date: 2017-05-04
 tags:
   - emacs
-...
+---
 
 Monday was (yet another)
 [NixOS hackathon][hackathon] at [OpenLab Augsburg][ola].
