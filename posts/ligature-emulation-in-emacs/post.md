@@ -91,3 +91,38 @@ codepoints starting from codepoint-start."
 
   (add-hook 'haskell-mode-hook 'my-set-hasklig-ligatures)
 ```
+
+## Appendix B (Update 1): FiraCode integration
+
+I also created a mapping for [FiraCode][fira]. You need to grab the [additional
+symbol font][symbol] that adds (most) ligatures to the unicode private use area.
+Consult your system documentation on how to add it to your font cache.
+Next add `"Fira Code"` and `"Fira Code Symbol"` to your font preferences. Symbol
+only contains the additional characters, so you need both.
+
+If you are on NixOS, the font package should be on the main branch shortly, [I
+added a package][symbol-pkg].
+
+[fira]: https://github.com/tonsky/FiraCode/
+[symbol]: https://github.com/tonsky/FiraCode/issues/211#issuecomment-239058632
+[symbol-pkg]: https://github.com/NixOS/nixpkgs/pull/25517
+
+Here’s the mapping adjusted for FiraCode:
+
+```elisp
+  (setq my-fira-code-ligatures
+    (let* ((ligs '("www" "**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\"
+                  "{-" "[]" "::" ":::" ":=" "!!" "!=" "!==" "-}"
+                  "--" "---" "-->" "->" "->>" "-<" "-<<" "-~"
+                  "#{" "#[" "##" "###" "####" "#(" "#?" "#_" "#_("
+                  ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*"
+                  "/**" "/=" "/==" "/>" "//" "///" "&&" "||" "||="
+                  "|=" "|>" "^=" "$>" "++" "+++" "+>" "=:=" "=="
+                  "===" "==>" "=>" "=>>" "<=" "=<<" "=/=" ">-" ">="
+                  ">=>" ">>" ">>-" ">>=" ">>>" "<*" "<*>" "<|" "<|>"
+                  "<$" "<$>" "<!--" "<-" "<--" "<->" "<+" "<+>" "<="
+                  "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<" "<~"
+                  "<~~" "</" "</>" "~@" "~-" "~=" "~>" "~~" "~~>" "%%"
+                  "x" ":" "+" "+" "*")))
+      (my-correct-symbol-bounds (my-ligature-list ligs #Xe100))))
+```
