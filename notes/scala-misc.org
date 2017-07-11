@@ -1,0 +1,10 @@
+#+TITLE: Misc findings about Scala
+
+* Type Classes
+  If you declare an instance in the same file where you use it, you have to do
+  it *above* the usage, otherwise the implicit resolver will be confused.
+
+* sbt
+  - sbt sucks, but it’s the best we got
+  - use sbt-revolver’s =re-start=, =re-stop=
+  - holy crap, =~= will reload everything on source code change

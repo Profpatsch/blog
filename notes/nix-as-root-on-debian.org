@@ -1,0 +1,39 @@
+#+TITLE: Setting up nix for root user on debian
+
+Sometimes you want to have an easy setup, which doesn’t use the nix daemon (and
+the nixbuild user). This is not covered by the current (2016-06) setup script,
+though.
+
+* Install nix
+
+  Grab the latest version for your arch from https://nixos.org/releases/nix/,
+  extract (make sure you get the binaries, not the source, >30Mb).
+
+  #+BEGIN_SRC sh
+  mkdir /nix
+  <unpacked-nix>/install
+  #+END_SRC
+
+  Logout, login.
+  Remove the unpacked files.
+  Done.
+
+
+* Remove nix
+
+  #+BEGIN_SRC sh
+  rm -rf /nix
+  rm ~/.nix*
+  #+END_SRC
+
+  That completely removes all traces of nix.
+
+
+* Install vuizvui
+
+  #+BEGIN_SRC sh
+  nix-channel --add https://headcounter.org/hydra/channel/custom/openlab/vuizvui/channels.generic vuizvui
+  nix-channel --update
+  # if you want to have <vuizvui> available
+  #echo 'NIX_PATH=vuizvui=/root/.nix-defexpr/channels/vuizvui:$NIX_PATH' >> ~/.profile
+  #+END_SRC

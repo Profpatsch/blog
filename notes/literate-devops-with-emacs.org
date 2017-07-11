@@ -1,0 +1,75 @@
+[[https://www.youtube.com/watch?v=dljNabciEGg&feature=youtu.be][link to the video]] \\
+[[http://howardism.org/Technical/Emacs/literate-devops.html][original essay]]
+
+* General
+  - Write in past tense so you don’t have to re-edit when mailing
+
+* Running Code
+
+  [[http://orgmode.org/org.html#Working-with-source-code][relevant org-mode docs]]
+
+  - cource code blocks can be created with ~<s<TAB>~
+  - =C-c C-c= executes
+    - you first have to add the languages you want to be able to execute to
+      =org-babel-load-languages=
+  - ~:exports [code|results|both|none]~ to export code/
+  - ~:dir <dir>~ relative path for cwd
+  - =C-c '= to open code block in its own buffer
+  - ~:tangle <filename>~ to export code block to file
+  - code block attributes can be put in a section property, like
+    #+BEGIN_SRC org
+    :PROPERTIES:
+    :dir: <relative dir>
+    :END:
+    #+END_SRC
+  - name blocks with ~#+NAME: <name>~ (shortcut: =<n<TAB>=)
+
+* Code Block Variables
+
+  ~#+BEGIN_SRC :var VARNAME=<something>~
+
+  Note that =something= can be the name of a code block, then the value will be
+  the output of that code block.
+
+  - ~:results table~ returns a table that can be indexed like ~table[2,3]~
+
+* Executing Remote Code
+
+  You can use tramp filenames and it will execute remotely
+
+  ~:dir: /scp:my.server.com:mydir~
+
+* Transforming outputs with another source code block
+
+  Create another code block that uses a variable, call this function from the
+  first block with the ~:post~ command:
+
+  #+BEGIN_SRC org
+    \#+BEGIN_SRC :results value list :post column1(data=*this*)
+      bla
+    \#+END_SRC
+
+    \#+BEGIN_SRC elisp :var data="" :results value
+      (mapcar 'car data)
+    \#+END_SRC
+  #+END_SRC
+
+  Source code blocks that can be used in multiple projects can be put into the
+  org-mode “tower of babel”. (Personal note: It is debatable whether this is a
+  good idea, since now everything depends on your local setup.)
+
+* Misc tramp Goodies
+** Speeding up tramp connections with sessions
+  Add a ~:session: <label>~ property. This also creates a buffer with a remote
+  eshell in it.
+
+** Hyperlinks
+  Use a tramp-style link to reference remote files, which you can then click and
+  edit in-place.
+
+** tramp Pipes
+  Route through multiple hosts like this: \\
+  ~/ssh:bastion.mydomain.com|jumpbox.mydomain.com|dest-host:some-file.org~
+
+  Also, change protocol: \\
+  ~/ssh:bastion.mydomain.com|sudo:bastion.mydomain.com:/etc/passwd~

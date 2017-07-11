@@ -1,0 +1,27 @@
+* RSS-feed
+** One item per post
+** One feed per tag
+** Optional: One item per post update
+   How should that be done? Two ideas:
+   1) filter out the git commits that change posts
+      - might be problematic because minor updates
+   2) create updates to articles manually, save them in some format
+      - maybe diffs?
+      - maybe another git repo?
+** For link collections one item per update
+** Content template for RSS updates
+
+* Posts in (Extended)Markdown
+** It should be possible to extend that for interactive stuff
+* Notes directly from org-mode files
+  e.g. for the berkeley sockets
+
+* Semantic, human readable refs to articles, but also unique IDs
+* Interactivity via including Purescript elements
+* Automatic publishing
+** Lives in 
+
+   
+* Tech
+
+Probably hakyll, since that is Haskell, includes pandoc (markdown) and can do RSS

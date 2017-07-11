@@ -1,0 +1,26 @@
+#+TITLE: Berkley Sockets and their usage
+
+* Usage
+  UDP = datagram, TCP = stream
+
+  1. call socket() (socket family either AF_UNIX, AF_INET, AF_INET6)
+
+** Server Side
+   2. bind() it to a hostname (which hosts may connect) and a port
+*** TCP
+    3. for TCP: listen(<number of queued connections>) and then
+    4. accept() to get a new socket that has an open connection
+
+** Client Side TCP
+   2. connect()
+
+  5. send()/recv(), alternatively sendTo()/recvFrom() for 
+
+
+* Languages
+
+** Haskell
+   - =Network.Socket=, =Network.Socket.ByteString= for =send/sendAll= & 
+     =recv/recvAll=.
+   - directly wraps the socket api
+   
