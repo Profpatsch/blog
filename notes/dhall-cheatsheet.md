@@ -111,16 +111,16 @@ in let
       = < Foo = "hello" | A : Text | B : Natural >
 in let
   handlers =
-    { A = \(a : Text) -> False
-    , B = \(i : Natural) -> Natural/even i
-    , Foo = \(t : Text) -> True && False }
+    { A   = \(a : Text)    -> False
+    , B   = \(i : Natural) -> Natural/even i
+    , Foo = \(t : Text)    -> True && False }
 in
   (merge handlers a : Bool)
     == True
 ```
 
 * tagged unions
-* attention: the `=` part has to come first for values
+* attention: the `=`-part has to come first for values
 * merge
   * builtin that matches on the tag
   * needs to produce the same type for each tag
