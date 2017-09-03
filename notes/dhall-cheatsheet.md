@@ -4,7 +4,7 @@ date: 2017-09-03
 author: Profpatsch
 ---
 
-Pipe file to `dhall` to typecheck/evaluate.
+Pipe file to `dhall` to typecheck/evaluate.  
 `dhall --explain` for extensive error explanations.
 
 # Syntax
@@ -12,8 +12,18 @@ Pipe file to `dhall` to typecheck/evaluate.
 * `value : type`
 * here we use `,` to separate multiple values, which is not valid dhall
 * `-- this is a dhall comment`
-* `let a = … in let b = … in …` (also for function aliases and import names)
+* let-syntax
+  
+  ```
+  let
+    a = …
+  in let
+    b = … 
+  in …`
+  ```
 
+  (also for function aliases and import names)
+  
 ## Scalars
 
 ```
@@ -139,9 +149,15 @@ in f "my text" 5
 
 ```
 let
-  const = \(t1 : Type) -> \(x : t1) -> \(t2 : Type) -> \(_ : t2) -> x
+  const = \(t1 : Type) ->
+          \(x : t1) ->
+          \(t2 : Type) ->
+          \(_ : t2) ->
+            x
 in let
-  id = \(t : Type) -> \(x : t) -> x
+  id = \(t : Type) ->
+       \(x : t) ->
+         x
 in 
   const Bool False Text "text"
     == id Bool False
