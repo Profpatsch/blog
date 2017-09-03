@@ -104,26 +104,27 @@ True, False : Bool
 
 ```
 let 
-  a : < A : Text | B : Integer | Foo : Text >
-      = < B = 42 | A : Text | Foo : Text >
+  a : < A : Text | B : Natural | Foo : Text >
+      = < B = +42 | A : Text | Foo : Text >
 in let
-  b : < A : Text | B : Integer | Foo : Text >
-      = < Foo = "hello" | A : Text | Foo : Text >
+  b : < A : Text | B : Natural | Foo : Text >
+      = < Foo = "hello" | A : Text | B : Natural >
 in let
   handlers =
-    { A = \(a : Text) -> a
-    , B = \(i : Integer) -> "int: ${i}"
-    , Foo = \(t : Text) -> "foo: ${t}" }
+    { A = \(a : Text) -> False
+    , B = \(i : Natural) -> Natural/even i
+    , Foo = \(t : Text) -> True && False }
 in
-  match handlers a
-    == "int: 42"
+  (merge handlers a : Bool)
+    == True
 ```
 
 * tagged unions
 * attention: the `=` part has to come first for values
-* match
+* merge
   * builtin that matches on the tag
   * needs to produce the same type for each tag
+  * always requires an annotation of the output type
   
 # Computing
 
