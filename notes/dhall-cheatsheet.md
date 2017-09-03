@@ -24,6 +24,44 @@ True, False : Bool
 "hello world" : Text
 ```
 
+### String
+
+1. normal double-quoted strings, Haskell style escaping (`"\"abc\"\ndef"`)
+2. nix-style interpolated, multi-line strings
+  * newline stripping
+
+    ```
+    ''
+      foo
+      bar
+    ''
+    ```
+
+    is `"\nfoo\nbar\n"`
+
+  * no newlines
+  
+    ```
+      ''foo
+    '''x
+    bar''
+    ```
+    
+    is `"foo\n''x\nbar"`
+    
+  * interpolation
+  
+    ```
+    let template = 
+          \(name : Text) ->
+          \(age : Integer) ->
+            ''${name} is ${Integer/show age} years old''
+    in template "bilbo" 24
+    ```
+
+    outputs `"bilbo is 24 years old"`
+
+
 ## Complex Types
 
 ### List
