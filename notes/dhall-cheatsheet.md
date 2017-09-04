@@ -19,7 +19,7 @@ Pipe file to `dhall` to typecheck/evaluate.
     a = …
   in let
     b = … 
-  in …`
+  in …
   ```
 
   (also for function aliases and import names)
@@ -133,7 +133,7 @@ in
 ```
 let f = \(firstArgument : Text) ->
         \(secondArgument : Integer) ->
-        "some text ${firstArgument} and int ${secondArgument}"
+        "some text ${firstArgument} and int ${Integer/show secondArgument}"
 in f "my text" 5
 ```
 
