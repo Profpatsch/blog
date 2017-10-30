@@ -1,0 +1,55 @@
+
+/* #sec-title-slide h1, #sec-title-slide h2, #sec-title-slide h3 { */
+/*     text-transform: none; */
+/* } */
+
+#sec-title-slide {
+    margin-top: 3em;
+}
+#sec-title-slide h1 {
+    font-size: 2.5em;
+}
+#sec-title-slide h2 {
+    font-size: 1.3em;
+}
+#sec-title-slide h3 {
+    font-size: 1.5em;
+}
+#sec-title-slide h2 {
+    font-size: 1.3em;
+}
+
+.reveal h1, .reveal h2, .reveal h3 {
+    text-transform: none;
+}
+.reveal h2 {
+    font-size: 2em;
+}
+.reveal h3 {
+    font-size: 1.5em;
+}
+
+.reveal code {
+    background-color: #444;
+}
+
+.reveal pre code {
+    font-size: 1.3em;
+    line-height: 1.3em;
+    overflow: visible;
+    padding-left: 0.8em;
+    max-height: 900px;
+}
+.reveal pre {
+    padding-left: 0.8em;
+    box-shadow: none;
+}
+
+.reveal .highlight {
+    color: #fe8947;
+    font-weight: 600;
+}
+.reveal .highlight-start {
+    color: #bded4a;
+    font-weight: 600;
+}

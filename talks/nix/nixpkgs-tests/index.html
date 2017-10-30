@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Nixpkgs Packaging</title>
+    <meta name="author" content="(Profpatsch)"/>
+    <Link rel="stylesheet" href="./reveal.js-3.5.0/css/reveal.css"/>
+    <link rel="stylesheet" href="./reveal.js-3.5.0/css/theme/black.css" id="theme"/>
+    <link rel="stylesheet" href="./style.css"/>
+  </head>
+
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section id="sec-title-slide"><h2>The Power To Revolutionize</h2><h1>Nixpkgs Packaging</h1><h3>@Profpatsch</h3>
+          <h3>NixCon 2017-10-28</h3>
+        </section>
+
+        <section>
+          <section>
+            <h2>Status Quo</h2>
+            <div class="outline-text-2">
+            </div></section>
+          <section>
+            <h3>Existing Tests</h3>
+            <ul>
+              <li class="fragment"><code>/lib/tests</code>
+                <ul>
+                  <li>for library functions</li>
+                  <li>unit tests in a shell script</li>
+                  <li><code>nix-build /lib/tests/release.nix</code></li>
+                </ul></li>
+              <li class="fragment"><code>/nixos/tests</code>
+                <ul>
+                  <li>for modules</li>
+                  <li>VM tests in nix expr &amp; perl DSL</li>
+                  <li><code>nix-build -A tests.&lt;test&gt;.&lt;system&gt; /nixos/release.nix</code></li>
+                </ul></li>
+            </ul>
+
+            <aside class="notes">
+              <ul>
+                <li>/lib/tests only nix-values</li>
+                <li>/nixos/tests
+                  <ul>
+                    <li>module system</li>
+                    <li>(lightweight) VM support (which?)</li>
+                  </ul></li>
+              </ul>
+            </aside>
+
+          </section>
+          <section>
+            <h3>Shared Problem</h3>
+            <ul>
+              <li class="fragment" >far removed from implementation</li>
+              <li class="fragment" >run seperately</li>
+              <li class="fragment" >run manually</li>
+            </ul>
+            <p class="fragment">
+              ⇒ desync, bit-rot
+            </p>
+
+            <aside class="notes">
+              <p>
+                may be migitated by good tools <br />
+                e.g. automated CI message on breakage <br />
+                or GH PR checks <br />
+                but: which tests should run?
+              </p>
+            </aside>
+
+          </section>
+          <section>
+            <h3>Two Maxims</h3>
+            <ol>
+              <li class="fragment">As close as possible</li>
+              <li class="fragment">Not possible to change the implementation without passing the tests</li>
+
+            </ol>
+            <aside class="notes">
+              <ol>
+                <li>In the same file if possible, if not same folder</li>
+                <li>also means the tests have to actually run
+                  always &amp; automatically</li>
+              </ol>
+            </aside>
+
+          </section>
+        </section>
+        <section>
+          <section>
+            <h2>The Implementation</h2>
+            <pre  class="example"><code class="fragment">
+hello = <span class="fragment highlight">someTests</span> (callPackage ./hello {});
+            </code></pre>
+            <div class="fragment"><code>hello</code> depends on the successful build of
+              <ul class="fragment" ><li>the <code>hello</code> derivation</li>
+                <li><code>someTests</code></li>
+              </ul>
+            </div>
+            <div class="fragment">but the derivation mustn’t depend on <code>someTests</code></div>
+            <aside class="notes">
+              <ol>
+                <li>Don’t want hello if the tests don’t always pass</li>
+                <li>Don’t want to recompile on a changed test either</li>
+              </ol>
+            </aside>
+          </section>
+          <section>
+            <h3>Wait, We know that!</h3>
+            <p class="fragment">It’s called <code>seq</code>, right?</p>
+            <div class="fragment"><code>nix-build</code> …
+              <pre><code class="fragment">
+builtins.seq (writeText "<span class="highlight-start">bla</span>" "") hello
+» /nix/store/<span class="highlight-start">fbv…3h</span>-hello-2.10
+              </code></pre>
+              <pre><code class="fragment">
+builtins.seq (writeText "<span class="highlight">foo</span>" "") hello
+» /nix/store/<span class="highlight-start">fbv…3h</span>-hello-2.10
+              </code></pre>
+            </div>
+          </section>
+          <section>
+            <div style="font-size: 10em;">:‘(</div>
+          </section>
+          <section>
+            <h3>So, is there a <code>drvSeq</code>?</h3>
+            <br/> <br/>
+            <div style="font-size: 0.7em; margin-left: 10em;" class="fragment highlight">no</div>
+          </section>
+          <section>
+            <div style="font-size: 10em;">:<span class="highlight">‘</span>(</div>
+          </section>
+          <section>
+            <div style="font-size: 0.7em; margin-top: 17em; margin-right: 10em;" class="fragment highlight-start">well, maybe…</div>
+          </section>
+          <section>
+            <h3><code>   drvSeq    </code></h3>
+            <pre><code>
+drvSeq = <span class="fragment highlight-start" data-fragment-index="1">drvDep</span>: <span class="fragment highlight-start" data-fragment-index="2">drvOut</span>: let
+<span class="fragment" data-fragment-index="3">  <span class="highlight">drvOutOutputs</span> = drvOut.outputs or ["out"];</span>
+in
+  runCommand drvOut.name {
+<span class="fragment" data-fragment-index="4">    outputs          = <span class="highlight">drvOutOutputs</span>;
+    passthru         = drvOut.drvAttrs;</span>
+
+<span class="fragment" data-fragment-index="5">    inherit drvDep;</span>
+  }
+  (lib.concatMapStrings (output: ''
+    ...
+            </code></pre>
+            <aside class="notes">
+              <ol>
+                <li>Create identical hello drv (drvOutputs, drvArgs)</li>
+                <li>Assign test to drv’s attribute</li>
+              </ol>
+            </aside>
+          </section>
+          <section>
+            <h3><code>   drvSeq (2)</code></h3>
+            <pre><code>
+}
+(lib.concatMapStrings (<span class="fragment" data-fragment-index="2"><span class="highlight">output</span>: ''
+<span class="fragment" data-fragment-index="3">  <span class="highlight-start">target</span>=${lib.escapeShellArg
+                 drvOut.${<span class="highlight">output</span>}}</span>
+<span class="fragment" data-fragment-index="4">  <span class="highlight-start">target</span>=$(readlink -e "$<span class="highlight-start">target</span>")</span>
+<span class="fragment" data-fragment-index="5">  ln -s "$<span class="highlight-start">target</span>" "${"$"}${<span class="highlight">output</span>}"</span>
+''</span>) <span class="fragment highlight" data-fragment-index="1">drvOutOutputs</span>);
+            </code></pre>
+            <aside class="notes">
+              <ul>
+                <li>Now only the actual files are missing</li>
+                <ul><li>Turns out symlinking store paths is possible!</li>
+                  <li>multiple symlink levels get cut short</li>
+                </ul>
+              </ul>
+            </aside>
+          </section>
+          <section>
+            <h3><code>   drvSeqL   </code></h3>
+            <pre class="fragment"><code>
+<span class="highlight-start">drvSeqL</span> = drvDeps: drvOut:
+            <span class="fragment">foldr <span class="highlight">drvSeq</span> drvOut drvDeps</span>
+            </code></pre>
+            <pre class="fragment"><code>
+<span class="highlight">drvSeq</span>  = drvDep: drvOut:
+            <span class="highlight-start">drvSeqL</span> [drvDep] drvOut
+            </code></pre>
+            <aside class="notes">
+              <ul>
+                <li>folding creates lots of useless symlinks in store</li>
+                <li>So we invert it</li>
+              </ul>
+            </aside>
+          </section>
+          <section>
+            <h3><code class="highlight">  withTests  </code></h3>
+            <pre><code>
+<span class="highlight">withTests</span> = <span class="highlight">tests</span>: drv:
+  <span class="fragment" data-fragment-index="2">let testDrvs = lib.mapAttrsToList
+    (name: testScript:
+      runCommand "${drv.name}-test-${name}"
+        {}</span> <span class="fragment" data-fragment-index="1">''
+          ${testScript}
+          touch "$out"
+        ''</span><span class="fragment" data-fragment-index="2">) <span class="highlight">tests</span>;</span>
+  in <span class="highlight-start">drvSeqL</span> testDrvs drv;
+            </code></pre>
+
+            <aside class="notes">
+              Now we can write a simple helper to
+              run our “testsuites”.
+            </aside>
+          </section>
+          <section>
+            <h3>世界、こんにちは。</h3>
+            <figure>
+              <pre><code>
+let
+  version = "1.23.4";
+
+  <span class="fragment" data-fragment-index="1"><span class="highlight-start">hello</span> = stdenv.mkDerivation { ... };</span>
+
+  <span class="fragment highlight" data-fragment-index="2">tests = { ... };</span>
+
+in <span class="fragment highlight" data-fragment-index="2">withTests tests</span> <span class="fragment highlight-start" data-fragment-index="1">hello</span>
+
+              </code></pre>
+              <figcaption><code>hello/default.nix</code></figcaption>
+            </figure>
+          </section>
+          <section>
+            <h3>世界、こんにちは。</h3>
+            <pre><code>
+<span class="highlight">tests</span> = {
+  <span class="fragment">helloTest = ''
+    ${<span class="highlight-start">hello</span>}/bin/hello \
+      | grep "Hello, world!"
+  '';</span>
+
+  <span class="fragment">versonText = ''
+    ${<span class="highlight-start">hello</span>}/bin/hello --version \
+      | grep "${version}"
+  '';</span>
+};
+            </code></pre>
+
+            <aside class="notes">
+              <ol>
+                <li>Yes, that’s basically an integration test for hello world. :)</li>
+                <li>We can check against nix values again!</li>
+                <li>It’s also a basic check for most binaries! (e.g. python)</li>
+              </ol>
+            </aside>
+          </section>
+
+          <section>
+            <pre><code>
+building path(s)
+‘/nix/store/kdl…n8-hello-2.10-test-helloTest’
+building path(s)
+‘/nix/store/wnd…iz-hello-2.10-test-versionTest’
+Hello, world!
+hello (GNU Hello) 2.10
+building path(s) ‘/nix/store/ql9…fw-hello-2.10’
+/nix/store/ql9…fw-hello-2.10
+            </code></pre>
+
+            <div class="fragment highlight-start">Yay!</div>
+          </section>
+
+          <section>
+            <h3>The power to bring Revolution</h3>
+            <pre><code>
+<span class="highlight">tests</span> = let
+  <span class="fragment">matchStdout = invoc: regex: '' ... '';</span>
+  <span class="fragment">bin = "${<span class="highlight-start">hello</span>}/bin/hello";</span>
+  in {
+    <span class="fragment">helloTest = matchStdout
+                  bin "Hello, world!";</span>
+    <span class="fragment">versionTest = matchStdout
+                  "${bin} --version" version;</span>
+  };
+            </code></pre>
+            <div class="fragment">And if we want to say goodbye?</div>
+            <aside class="notes">
+              <ol>
+                <li>We have the full power of nix here, which is really cool</li>
+              </ol>
+            </aside>
+          </section>
+
+          <section>
+            <pre><code>
+building path(s)
+‘/nix/store/zpm…d2-hello-2.10-test-helloTest’
+FAIL: Output did not match
+Invocation: /nix/store/4qj…y0-hello-2.10/bin/hello
+Regex: Goodbye, cruel world
+Output:
+Hello, world!
+builder for
+‘/nix/store/7vl…h9-hello-2.10-test-helloTest.drv’
+failed with exit code 1
+cannot build derivation
+‘/nix/store/5c9…a9-hello-2.10.drv’:
+1 dependencies couldn't be built
+            </code></pre>
+            <aside class="notes">
+              <ol>
+                <li>A nice error message, also for wrong version</li>
+                <li>It only runs that one single test!</li>
+                <li>Doesn’t rebuild hello, doesn’t repeat tests</li>
+              </ol>
+
+          </section>
+
+        </section>
+
+        <section>
+          <section>
+            <h2>More ideas</h2>
+          </section>
+          <section>
+            <h3>Woof</h3>
+            <h4>Ear your own dogfood</h4>
+            <ol>
+              <li class="fragment">Want to test <code>withTests</code></li>
+              <li class="fragment">Need to run nix inside a derivation</li>
+              <li class="fragment">Factor existing code into script</li>
+              <li class="fragment">Test that script</li>
+              <li class="fragment">???</li>
+              <li class="fragment">Ultimate Testiny Apocanix</li>
+            </ol>
+            <aside class="notes">
+              <ol>
+                <li>Already in <code>lib/tests</code>/</li>
+                <li>Instantiate and build a simple derivation</li>
+                <li>Check nix output</li>
+                <li>Documents nix command line changes (1.12)</li>
+                <li>(I’m sorry)</li>
+              </ol>
+            </aside>
+          </section>
+
+          <section>
+            <h3>Different version of package for tests</h3>
+            <pre class="fragment"><code>
+beets = ...;
+tests = let
+  testBeets = beets.override {
+    enablePlugin = true;
+  };
+  in ...;
+            </code></pre>
+          </section>
+
+        <section>
+          <h3>Proposal: VM tests</h3>
+          <div class="fragment"><strong>Maxim 1</strong>: Keep tests close to implementation</div>
+          <ul class="fragment">
+            <li>Hydra: Nested attrs of test drvs</li>
+            <li>In module: <pre><code>
+config = mkIf foocfg.enable {
+  tests.footest = ...;
+};
+            </code></pre></li>
+          </ul>
+        </section>
+        <section>
+          <h3>Proposal: VM tests</h3>
+          <pre><code>
+let
+nestedOf = container: type:
+  lib.fix (oneLevelBefore: container
+    (either type (oneLevelBefore
+      // { name = …; description = …; } )));
+in
+  <span class="fragment">options.tests = lib.mkOption {
+    type = nestedOf attrsOf package;
+    default = {};
+  };</span>
+
+          </code></pre>
+        </section>
+
+        <section>
+          <h2>Next Steps/Future Work</h2>
+          <ol>
+            <li class="fragment">Flesh out <code>withTests</code> interface</li>
+            <li class="fragment">Implement exemplary tests for a few pkgs</li>
+            <li class="fragment">Pull request with primitives & example pkgs</li>
+            <li class="fragment">???</li>
+            <li class="fragment">>PROFIT!!</li>
+          </ol>
+        </section>
+
+        <section>
+          <h3>Pitch</h3>
+          <pre class="fragment"><code>
+harddrive.powerManagement = mkOption {
+  type = <span class="highlight">taggedUnion</span> {
+    <span class="highlight-start">off</span>  = unit;
+    <span class="highlight-start">low</span>  = int.between   1 127;
+    <span class="highlight-start">high</span> = int.between 128 254;
+  };
+  ...
+          </code></pre>
+
+          <div class="fragment">& SmallCheck-like enumerators for types</div>
+
+        </section>
+          <section>
+            <h2>End of Presentation</h2>
+            <div><strong>@Profpatsch</strong></div>
+
+            <div>Come join me at the Hackathon & on Github</div>
+          </section>
+        <section>
+        
+      </div>
+    </div>
+    <script src="./reveal.js-3.5.0/lib/js/head.min.js"></script>
+    <script src="./reveal.js-3.5.0/js/reveal.js"></script>
+
+    <script>
+     // Full list of configuration options available here:
+     // https://github.com/hakimel/reveal.js#configuration
+     Reveal.initialize({
+         showNotes: true,
+         controls: true,
+         progress: false,
+         history: true,
+         center: false,
+         slideNumber: 'c',
+         rollingLinks: false,
+         keyboard: true,
+         overview: true,
+
+         theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+         transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+         transitionSpeed: 'default',
+         multiplex: {
+             secret: '', // null if client
+             id: '', // id, obtained from socket.io server
+             url: '' // Location of socket.io server
+         },
+
+         // Optional libraries used to extend on reveal.js
+         dependencies: [
+             { src: './reveal.js-3.5.0/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+         ],
+     });
+    </script>
+  </body>
+</html>
