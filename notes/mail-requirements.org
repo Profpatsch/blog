@@ -1,0 +1,22 @@
+* Workflow
+** Reading Mail
+   Important Mail should be sorted to the top automatically.
+   => That means priority filtering needs to happen
+   There’s two actions, archive and delete.
+   Directly queuing stuff in (external!) TODO/Calendar &c. should be possible,
+   but can also happen manually.
+   Seeing the context (i.e. thread or similar) of a mail should be one action.
+** Finding Mail
+   Threaded view should be default.
+   Filtering by fulltext or arbitrary tags/fields.
+   There are no folders (they don’t work), just indexing.
+** Answering Mail
+   Reply all is default. Recipients should be prominently listed and easy to change.
+
+** Address book
+   Should integrate into an existing contact database easily.
+** Attachment
+   Attachments come first. Don’t want to forget them.
+
+tech:
+maildir, notmuch
