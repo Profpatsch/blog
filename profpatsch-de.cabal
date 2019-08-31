@@ -1,0 +1,60 @@
+-- This file has been generated from package.yaml by hpack version 0.18.1.
+--
+-- see: https://github.com/sol/hpack
+
+name:           profpatsch-de
+version:        0.1.0
+synopsis:       My blog.
+category:       Data
+author:         Profpatsch
+maintainer:     mail@profpatsch.de
+license:        GPL-3
+build-type:     Simple
+cabal-version:  >= 1.10
+
+library
+  hs-source-dirs:
+      src
+  ghc-options: -Wall
+  build-depends:
+      aeson
+    , base == 4.*
+    , containers
+    , either >= 4.4
+    , data-default
+    , doctemplates
+    , filepath
+    , pandoc == 1.19.*
+    , pandoc-types
+    , protolude >= 0.1
+    , shake == 0.15.*
+    , text
+  exposed-modules:
+      Development.Shake.Text
+      Profpatsch.Blog
+      Profpatsch.Blog.Compiler
+      Profpatsch.Blog.Converter
+      Profpatsch.Blog.Types
+      Text.Pandoc.FromMeta
+  other-modules:
+      Paths_profpatsch_de
+  default-language: Haskell2010
+
+executable site-compiler
+  main-is: SiteCompiler.hs
+  ghc-options: -Wall
+  build-depends:
+      aeson
+    , base == 4.*
+    , containers
+    , either >= 4.4
+    , data-default
+    , doctemplates
+    , filepath
+    , pandoc == 1.19.*
+    , pandoc-types
+    , protolude >= 0.1
+    , shake == 0.15.*
+    , text
+    , profpatsch-de
+  default-language: Haskell2010

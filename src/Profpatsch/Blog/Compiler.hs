@@ -11,17 +11,24 @@ import qualified Development.Shake.FilePath as FP
 import qualified Text.DocTemplates as Tmpl
 import qualified Data.Aeson as A
 import qualified Data.Either.Validation as V
+import qualified Data.Map as M
 import qualified Data.Text as T
 import System.Exit (exitFailure)
 
 import Profpatsch.Blog.Types
 import qualified Profpatsch.Blog.Converter as BConv
 
-templateFolder, postFolder, wipFolder :: FilePath
+templateFolder, postFolder, wipFolder, staticFolder :: FilePath
 templateFolder = "templates"
 postFolder = "posts"
 wipFolder = postFolder FP.</> "wip"
 postFileName = "post.md"
+staticFolder = "static"
+staticFiles :: M.Map Text FilePath
+staticFiles = M.fromList $ tsmap ("static" FP.</>)
+  [ ("jquery", "jquery.min.js")
+  , ("talkies", "talkies.js") ]
+  where tsmap f = map (\(k, v) -> (k, f v))
 
 compileBlogDefaultMain :: IO ()
 compileBlogDefaultMain = shakeArgs opts (compileBlog "_site")
@@ -31,18 +38,22 @@ compileBlogDefaultMain = shakeArgs opts (compileBlog "_site")
 
 compileBlog :: FilePath -> Rules ()
 compileBlog buildFolder = do
-  want [index]
+  want $ outputs $ [] <> statics
 
-  index %> \out -> do
+  output index %> \out -> do
     postDirs <- filter (/= wipFolder)
               . map (postFolder FP.</>)
              <$> getDirectoryDirs postFolder
     metas <- for (foreach postDirs (FP.</> postFileName)) postToPostMeta
-    tmpl <- applyTemplate (templateFolder FP.</> "index.html") metas
+    tmpl <- applyTemplate (templateFolder FP.</> index) metas
     writeFileT out tmpl
 
+  output (staticFolder </> "*") %> \out -> do
+    
+
   where
-    index = buildFolder FP.</> "index.html"
+    index = "index.html"
+    output = (buildFolder FP.</>)
 
 postToPostMeta :: FilePath -> Action PostMeta
 postToPostMeta fp = do
@@ -54,10 +65,12 @@ applyTemplate :: FilePath -- ^ template path
               -> [PostMeta] -- ^ metadata context
               -> Action Text
 applyTemplate name ms = do
-  let posts = A.object ["post" A..= A.toJSON ms ]
-  liftIO $ print $ A.encode posts
+  let indexVars = A.object
+        [ "post" A..= A.toJSON ms
+        , "scripts" A..= A.toJSON staticFiles ]
+  liftIO $ print $ A.encode indexVars
   raw <- readFileT name
-  case Tmpl.applyTemplate raw posts of
+  case Tmpl.applyTemplate raw indexVars of
     Left err  -> dieA . toS
       $ "could not compile template " <> name <> "\n" <> err
     Right res -> pure res
