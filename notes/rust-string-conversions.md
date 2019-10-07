@@ -17,6 +17,7 @@ From       To        Use                                     Comment
 String   -> &str      &s                                     alt. s.as_str()
 String   -> &[u8]     s.as_bytes()
 String   -> Vec<u8>   s.into_bytes()
+String   -> OsString  OsString::from(s)
 
 &[u8]    -> &str      str::from_utf8(u).unwrap()
 &[u8]    -> String    String::from_utf8(u).unwrap()
