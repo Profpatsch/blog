@@ -1,11 +1,6 @@
 { system, pkgs, lib }:
 
 let
-
-  # until https://github.com/dhall-lang/dhall-haskell/pull/188 is resolved
-  # dhallPkg = pkgs.haskell.lib.overrideCabal pkgs.dhall (old: {
-  #   src = /home/philip/code/haskell/dhall-haskell;
-  # });
   dhallPkg = pkgs.dhall;
 
   # “Pipe” mechanism for nix store files.
