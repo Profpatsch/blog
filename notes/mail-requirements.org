@@ -20,3 +20,28 @@
 
 tech:
 maildir, notmuch
+
+* Ordering rules
+
+** High
+   - Mails directly to me by address book entries
+   - Mails answering mails from me
+   - Mails an vorstand@openlab-augsburg.de
+   - techcultivation
+** Mid
+   - Mails mentioning my Name/Nick
+   - Songkick concert (Sub: "New concert for X")
+** Low
+   - Mails from important MLs (Lugalist)
+   - Haskell/NixOS Weekly
+   - Mein Grundeinkommen Verlosung
+** Money (try to automate as much as possible)
+   - Bank
+   - Patreon
+   - online.net
+** Noise
+   - Rest of MLs
+   - Bandcamp releases
+   - Hydra build notices
+   - Klaus Prem
+** Spam
