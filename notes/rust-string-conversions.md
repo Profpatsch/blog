@@ -6,7 +6,7 @@ let st: &str = ...
 let u: &[u8] = ...
 let b: [u8; 3] = b"foo"
 let v: Vec<u8> = ...
-let os: OsStrig = ...
+let os: OsString = ...
 let ost: OsStr = ...
  
 From       To         Use                                    Comment
@@ -31,12 +31,19 @@ String   -> OsString  OsString::from(s)
 Vec<u8>  -> &str      str::from_utf8(&v).unwrap()            via &[u8]
 Vec<u8>  -> String    String::from_utf8(v)
 Vec<u8>  -> &[u8]     &v
+Vec<u8>  -> OsString  OsString::from_vec(v)                  use std::os::unix::ffi::OsStringExt;
 
 &OsStr   -> &str      ost.to_str().unwrap()
-&OsStr   -> String    ost.to_owned().into_string().unwrap()  via OsString
+&OsStr   -> String    ost.to_os_string().into_string()       via OsString
+                         .unwrap()
 &OsStr   -> Cow<str>  ost.to_string_lossy()                  Unicode replacement characters
+&OsStr   -> OsString  ost.to_os_string()
+&OsStr   -> &[u8]     ost.as_bytes()                         use std::os::unix::ffi::OsStringExt;
 
-OsString -> String    ost.into_string().unwrap()             returns original OsString on failure
+OsString -> String    os.into_string().unwrap()              returns original OsString on failure
+OsString -> &str      os.to_str().unwrap()
+OsString -> &OsStr    os.as_os_str()
+OsString -> Vec<u8>   os.into_vec()                          use std::os::unix::ffi::OsStringExt;
 ```
 
 
